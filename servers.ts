@@ -74,7 +74,7 @@ const Fetch = async () => {
   }
 };
 Fetch();
-setInterval(Fetch, 5000);
+setInterval(Fetch, 60000);
 const app = new Application();
 const router = new Router();
 app.use(oakCors());
