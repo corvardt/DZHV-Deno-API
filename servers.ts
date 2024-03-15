@@ -1,6 +1,5 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
-
 const kv = await Deno.openKv();
 const Fetch = async () => {
   let arb_price = 0,
@@ -57,17 +56,18 @@ const Fetch = async () => {
       }
     }
     const timestamp = Date.now();
-    const eth = await kv.set(["eth", timestamp, eth_price, eth_liq, eth_vol]);
-    const arb = await kv.set(["arb", timestamp, arb_price, arb_liq, arb_vol]);
-    const avax = await kv.set(["avax", timestamp, avax_price, avax_liq, avax_vol]);
-    const base = await kv.set(["base", timestamp, base_price, base_liq, base_vol]);
-    const bsc = await kv.set(["bsc", timestamp, bsc_price, bsc_liq, bsc_vol]);
-    const full = await kv.set(["full", timestamp, eth_price, arb_price, avax_price, base_price, bsc_price]);
-    if (eth && arb && avax && base && bsc && full) {
-      console.log(timestamp,"Data Stored");
-    }else if (!eth || !arb || !avax || !base || !bsc || !full) {
-      console.log(timestamp,"Data Not Stored");
-    }
+    await kv.set(["arb", timestamp], [arb_price, arb_liq, arb_vol]);
+    await kv.set(["bsc", timestamp], [bsc_price, bsc_liq, bsc_vol]);
+    await kv.set(["base", timestamp], [base_price, base_liq, base_vol]);
+    await kv.set(["avax", timestamp], [avax_price, avax_liq, avax_vol]);
+    await kv.set(["eth", timestamp], [eth_price, eth_liq, eth_vol]);
+    await kv.set(["full", timestamp], [
+      eth_price,
+      arb_price,
+      avax_price,
+      base_price,
+      bsc_price,
+    ]);
   } catch (error) {
     console.error(error);
   }
@@ -78,38 +78,60 @@ const app = new Application();
 const router = new Router();
 app.use(oakCors());
 
-router.get("/v1/liveprices", (ctx) => {
-    const full = kv.list({ prefix: ["full"] });
-  return ctx.response.body = full;
+router.get("/v1/liveprices", async (ctx) => {
+  const data = [];
+  const result = await kv.list({ prefix: ["full"] });
+  for await (const { value } of result) {
+    data.push(value);
+  }
+  return ctx.response.body = data;
 });
 
-router.get("/v1/tokens/arb", (ctx) => {
-  const arb = kv.list({ prefix: ["arb"] });
-  return ctx.response.body = arb;
+router.get("/v1/tokens/arb", async (ctx) => {
+  const data = [];
+  const result = await kv.list({ prefix: ["arb"] });
+  for await (const { value } of result) {
+    data.push(value);
+  }
+  return ctx.response.body = data;
+});
+router.get("/v1/tokens/eth", async (ctx) => {
+  const data = [];
+  const result = await kv.list({ prefix: ["eth"] });
+  for await (const { value } of result) {
+    data.push(value);
+  }
+  return ctx.response.body = data;
 });
 
-router.get("/v1/tokens/eth", (ctx) => {
-    const eth = kv.list({ prefix: ["eth"] });
-  return ctx.response.body = eth;
+router.get("/v1/tokens/avax", async (ctx) => {
+  const data = [];
+  const result = await kv.list({ prefix: ["avax"] });
+  for await (const { value } of result) {
+    data.push(value);
+  }
+  return ctx.response.body = data;
 });
 
-router.get("/v1/tokens/avax", (ctx) => {
-    const avax = kv.list({ prefix: ["avax"] });
-  return ctx.response.body = avax;
+router.get("/v1/tokens/base", async (ctx) => {
+  const data = [];
+  const result = await kv.list({ prefix: ["base"] });
+  for await (const { value } of result) {
+    data.push(value);
+  }
+  return ctx.response.body = data;
 });
 
-router.get("/v1/tokens/base", (ctx) => {
-    const base = kv.list({ prefix: ["base"] });
-  return ctx.response.body = base;
+router.get("/v1/tokens/bsc", async (ctx) => {
+  const data = [];
+  const result = await kv.list({ prefix: ["bsc"] });
+  for await (const { value } of result) {
+    data.push(value);
+  }
+  return ctx.response.body = data;
 });
-
-router.get("/v1/tokens/bsc", (ctx) => {
-    const bsc = kv.list({ prefix: ["bsc"] });
-    return ctx.response.body = bsc;
-  });
 
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-await app.listen({ port: 8000 });
-
+await app.listen({ port: 8001 });
