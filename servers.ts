@@ -56,12 +56,13 @@ const Fetch = async () => {
       }
     }
     const timestamp = Date.now();
-    await kv.set(["arb", timestamp], [arb_price, arb_liq, arb_vol]);
-    await kv.set(["bsc", timestamp], [bsc_price, bsc_liq, bsc_vol]);
-    await kv.set(["base", timestamp], [base_price, base_liq, base_vol]);
-    await kv.set(["avax", timestamp], [avax_price, avax_liq, avax_vol]);
-    await kv.set(["eth", timestamp], [eth_price, eth_liq, eth_vol]);
+    await kv.set(["arb", timestamp], [timestamp, arb_price, arb_liq, arb_vol]);
+    await kv.set(["bsc", timestamp], [timestamp, bsc_price, bsc_liq, bsc_vol]);
+    await kv.set(["base", timestamp], [timestamp, base_price, base_liq, base_vol]);
+    await kv.set(["avax", timestamp], [timestamp, avax_price, avax_liq, avax_vol]);
+    await kv.set(["eth", timestamp], [timestamp, eth_price, eth_liq, eth_vol]);
     await kv.set(["full", timestamp], [
+      timestamp,
       eth_price,
       arb_price,
       avax_price,
