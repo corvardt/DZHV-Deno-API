@@ -19,7 +19,7 @@ const Fetch = async () => {
     avax_vol = 0;
   try {
     const response = await fetch(
-      "https://api.dexscreener.com/latest/dex/tokens/0x3419875B4D3Bca7F3FddA2dB7a476A79fD31B4fE",
+      "https://api.dexscreener.com/latest/dex/tokens/0x3419875B4D3Bca7F3FddA2dB7a476A79fD31B4fE"
     );
     const data = response.body ? await response.json() : {};
     for (let i = 0; i < data.pairs.length; i++) {
@@ -56,21 +56,73 @@ const Fetch = async () => {
       }
     }
     const timestamp = Date.now();
-    await kv.set(["arb", timestamp], [{timestamp : timestamp, arb_price : arb_price, arb_liq : arb_liq, arb_vol : arb_vol}]);
-    await kv.set(["eth", timestamp], [{timestamp : timestamp, eth_price : eth_price, eth_liq : eth_liq, eth_vol : eth_vol}]);
-    await kv.set(["bsc", timestamp], [{timestamp : timestamp, bsc_price : bsc_price, bsc_liq : bsc_liq, bsc_vol : bsc_vol}]);
-    await kv.set(["base", timestamp], [{timestamp : timestamp, base_price : base_price, base_liq : base_liq, base_vol : base_vol}]);
-    await kv.set(["avax", timestamp], [{timestamp : timestamp, avax_price : avax_price, avax_liq : avax_liq, avax_vol : avax_vol}]);
+    await kv.set(
+      ["arb", timestamp],
+      [
+        {
+          timestamp: timestamp,
+          arb_price: arb_price,
+          arb_liq: arb_liq,
+          arb_vol: arb_vol,
+        },
+      ]
+    );
+    await kv.set(
+      ["eth", timestamp],
+      [
+        {
+          timestamp: timestamp,
+          eth_price: eth_price,
+          eth_liq: eth_liq,
+          eth_vol: eth_vol,
+        },
+      ]
+    );
+    await kv.set(
+      ["bsc", timestamp],
+      [
+        {
+          timestamp: timestamp,
+          bsc_price: bsc_price,
+          bsc_liq: bsc_liq,
+          bsc_vol: bsc_vol,
+        },
+      ]
+    );
+    await kv.set(
+      ["base", timestamp],
+      [
+        {
+          timestamp: timestamp,
+          base_price: base_price,
+          base_liq: base_liq,
+          base_vol: base_vol,
+        },
+      ]
+    );
+    await kv.set(
+      ["avax", timestamp],
+      [
+        {
+          timestamp: timestamp,
+          avax_price: avax_price,
+          avax_liq: avax_liq,
+          avax_vol: avax_vol,
+        },
+      ]
+    );
     await kv.set(["full", timestamp], {
-      timestamp : timestamp,
-      arb_price : arb_price,
-      eth_price : eth_price,
-      bsc_price : bsc_price,
-      base_price : base_price,
-      avax_price : avax_price,
-    })
-    console.log(timestamp,": Done")
+      timestamp: timestamp,
+      arb_price: arb_price,
+      eth_price: eth_price,
+      bsc_price: bsc_price,
+      base_price: base_price,
+      avax_price: avax_price,
+    });
+    console.log(timestamp, ": Done");
   } catch (error) {
+    const timestamp = Date.now();
+    console.log(timestamp, ": error", "(", error, ")");
     console.error(error);
   }
 };
@@ -86,7 +138,7 @@ router.get("/v1/liveprices", async (ctx) => {
   for await (const { value } of result) {
     data.push(value);
   }
-  return ctx.response.body = data;
+  return (ctx.response.body = data);
 });
 
 router.get("/v1/tokens/arb", async (ctx) => {
@@ -95,7 +147,7 @@ router.get("/v1/tokens/arb", async (ctx) => {
   for await (const { value } of result) {
     data.push(value);
   }
-  return ctx.response.body = data;
+  return (ctx.response.body = data);
 });
 router.get("/v1/tokens/eth", async (ctx) => {
   const data = [];
@@ -103,7 +155,7 @@ router.get("/v1/tokens/eth", async (ctx) => {
   for await (const { value } of result) {
     data.push(value);
   }
-  return ctx.response.body = data;
+  return (ctx.response.body = data);
 });
 
 router.get("/v1/tokens/avax", async (ctx) => {
@@ -112,7 +164,7 @@ router.get("/v1/tokens/avax", async (ctx) => {
   for await (const { value } of result) {
     data.push(value);
   }
-  return ctx.response.body = data;
+  return (ctx.response.body = data);
 });
 
 router.get("/v1/tokens/base", async (ctx) => {
@@ -121,7 +173,7 @@ router.get("/v1/tokens/base", async (ctx) => {
   for await (const { value } of result) {
     data.push(value);
   }
-  return ctx.response.body = data;
+  return (ctx.response.body = data);
 });
 
 router.get("/v1/tokens/bsc", async (ctx) => {
@@ -130,7 +182,7 @@ router.get("/v1/tokens/bsc", async (ctx) => {
   for await (const { value } of result) {
     data.push(value);
   }
-  return ctx.response.body = data;
+  return (ctx.response.body = data);
 });
 
 app.use(router.routes());
