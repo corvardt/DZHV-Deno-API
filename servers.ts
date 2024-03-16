@@ -126,8 +126,9 @@ const Fetch = async () => {
     console.error(error);
   }
 };
-Fetch();
-setInterval(Fetch, 30000);
+Deno.cron("One minute", "* * * * *", () => {
+  Fetch();
+});
 const app = new Application();
 const router = new Router();
 app.use(oakCors());
