@@ -61,14 +61,15 @@ const Fetch = async () => {
     await kv.set(["bsc", timestamp], [{timestamp : timestamp, bsc_price : bsc_price, bsc_liq : bsc_liq, bsc_vol : bsc_vol}]);
     await kv.set(["base", timestamp], [{timestamp : timestamp, base_price : base_price, base_liq : base_liq, base_vol : base_vol}]);
     await kv.set(["avax", timestamp], [{timestamp : timestamp, avax_price : avax_price, avax_liq : avax_liq, avax_vol : avax_vol}]);
-    await kv.set(["full", timestamp], {
+    await kv.set(["full", timestamp], [{
       timestamp : timestamp,
       arb_price : arb_price,
       eth_price : eth_price,
       bsc_price : bsc_price,
       base_price : base_price,
       avax_price : avax_price,
-    })
+    }])
+    console.log(timestamp,": Done")
   } catch (error) {
     console.error(error);
   }
