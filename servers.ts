@@ -126,7 +126,7 @@ const Fetch = async () => {
     console.error(error);
   }
 };
-Deno.cron("Fetch : fifteen minutes", "*/15 * * * *", () => {
+Deno.cron("Fetch every fifteen minutes", "*/15 * * * *", () => {
   Fetch();
 });
 
