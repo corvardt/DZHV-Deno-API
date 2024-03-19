@@ -152,8 +152,8 @@ const Fetch = async () => {
     console.error(error);
   }
 };
-Fetch();
-Deno.cron("Fetch every fifteen minute", { minutes: { every: 15 } }, () => {
+
+Deno.cron("Run every fifteen minutes", "*/15 * * * *", () => {
   Fetch();
 });
 
