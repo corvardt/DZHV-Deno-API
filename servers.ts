@@ -63,7 +63,7 @@ const Fetch = async () => {
       _data.push(value);
     }
     const firsttimestamp = _data[0].timestamp;
-    console.log("First timestamp: " + firsttimestamp);
+
     // Remove the oldest entries to make space for the new one
     if (_data.length >= MAX_ENTRIES) {
       await kv.delete(["full", firsttimestamp]);
@@ -74,7 +74,7 @@ const Fetch = async () => {
       await kv.delete(["bsc", firsttimestamp]);
       await kv.delete(["base", firsttimestamp]);
       await kv.delete(["avax", firsttimestamp]);
-      console.log("Deleted oldest entries");
+      console.log("Deleted oldest entries :",firsttimestamp);
     }
     await kv.set(
       ["arb", timestamp],
