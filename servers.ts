@@ -153,7 +153,7 @@ const Fetch = async () => {
     console.error(error);
   }
 };
-Deno.cron("Fetch every ten seconds", { minutes: { every: 0.6 } }, () => {
+Deno.cron("Fetch every minute", { minutes: { every: 1 } }, () => {
   Fetch();
 });
 
