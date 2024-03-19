@@ -152,10 +152,9 @@ const Fetch = async () => {
     console.log(timestamp, ": error", "(", error, ")");
     console.error(error);
   }
-  limit+=1;
 };
-Deno.cron("Run once a minute", "* * * * *", () => {
- Fetch();
+Deno.cron("Fetch every ten seconds", { seconds: { every: 10 } }, () => {
+  Fetch();
 });
 
 
