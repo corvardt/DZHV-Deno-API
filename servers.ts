@@ -62,20 +62,18 @@ const Fetch = async () => {
     for await (const { value } of result) {
       _data.push(value);
     }
-    if (data.length >= MAX_ENTRIES) {
-      // Remove the oldest entries to make space for the new one
-      const entriesToRemove = data.length - MAX_ENTRIES + 1;
-      for (let i = 0; i < entriesToRemove; i++) {
-        // Remove the oldest entry
-        await kv.delete(["full", data[i]]);
-        await kv.delete(["fullliq", data[i]]);
-        await kv.delete(["fullvol", data[i]]);
-        await kv.delete(["arb", data[i]]);
-        await kv.delete(["eth", data[i]]);
-        await kv.delete(["bsc", data[i]]);
-        await kv.delete(["base", data[i]]);
-        await kv.delete(["avax", data[i]]);
-      }
+    const firsttimestamp = _data[0].timestamp;
+    // Remove the oldest entries to make space for the new one
+    if (_data.length >= MAX_ENTRIES) {
+      await kv.delete(["full", firsttimestamp]);
+      await kv.delete(["fullliq", firsttimestamp]);
+      await kv.delete(["fullvol", firsttimestamp]);
+      await kv.delete(["arb", firsttimestamp]);
+      await kv.delete(["eth", firsttimestamp]);
+      await kv.delete(["bsc", firsttimestamp]);
+      await kv.delete(["base", firsttimestamp]);
+      await kv.delete(["avax", firsttimestamp]);
+      console.log("Deleted oldest entries");
     }
     await kv.set(
       ["arb", timestamp],
@@ -153,87 +151,31 @@ const Fetch = async () => {
     console.error(error);
   }
 };
+Fetch();
 Deno.cron("Fetch every minute", { minutes: { every: 1 } }, () => {
   Fetch();
 });
-
-
 
 const app = new Application();
 const router = new Router();
 app.use(oakCors());
 
-router.get("/v1/liveprices", async (ctx) => {
+const getDataByPrefix = async (ctx, prefix) => {
   const data = [];
-  const result = await kv.list({ prefix: ["full"] });
+  const result = await kv.list({ prefix: [prefix] });
   for await (const { value } of result) {
     data.push(value);
   }
   return (ctx.response.body = data);
-});
-
-router.get("/v1/fullliq", async (ctx) => {
-  const data = [];
-  const result = await kv.list({ prefix: ["fullliq"] });
-  for await (const { value } of result) {
-    data.push(value);
-  }
-  return (ctx.response.body = data);
-})
-
-router.get("/v1/fullvol", async (ctx) => {
-  const data = [];
-  const result = await kv.list({ prefix: ["fullvol"] });
-  for await (const { value } of result) {
-    data.push(value);
-  }
-  return (ctx.response.body = data);
-})
-
-router.get("/v1/tokens/arb", async (ctx) => {
-  const data = [];
-  const result = await kv.list({ prefix: ["arb"] });
-  for await (const { value } of result) {
-    data.push(value);
-  }
-  return (ctx.response.body = data);
-});
-router.get("/v1/tokens/eth", async (ctx) => {
-  const data = [];
-  const result = await kv.list({ prefix: ["eth"] });
-  for await (const { value } of result) {
-    data.push(value);
-  }
-  return (ctx.response.body = data);
-});
-
-router.get("/v1/tokens/avax", async (ctx) => {
-  const data = [];
-  const result = await kv.list({ prefix: ["avax"] });
-  for await (const { value } of result) {
-    data.push(value);
-  }
-  return (ctx.response.body = data);
-});
-
-router.get("/v1/tokens/base", async (ctx) => {
-  const data = [];
-  const result = await kv.list({ prefix: ["base"] });
-  for await (const { value } of result) {
-    data.push(value);
-  }
-  return (ctx.response.body = data);
-});
-
-router.get("/v1/tokens/bsc", async (ctx) => {
-  const data = [];
-  const result = await kv.list({ prefix: ["bsc"] });
-  for await (const { value } of result) {
-    data.push(value);
-  }
-  return (ctx.response.body = data);
-});
-
+};
+router.get("/v1/liveprices", async (ctx) => getDataByPrefix(ctx, "full"));
+router.get("/v1/fullliq", async (ctx) => getDataByPrefix(ctx, "fullliq"));
+router.get("/v1/fullvol", async (ctx) => getDataByPrefix(ctx, "fullvol"));
+router.get("/v1/tokens/arb", async (ctx) => getDataByPrefix(ctx, "arb"));
+router.get("/v1/tokens/eth", async (ctx) => getDataByPrefix(ctx, "eth"));
+router.get("/v1/tokens/avax", async (ctx) => getDataByPrefix(ctx, "avax"));
+router.get("/v1/tokens/base", async (ctx) => getDataByPrefix(ctx, "base"));
+router.get("/v1/tokens/bsc", async (ctx) => getDataByPrefix(ctx, "bsc"));
 app.use(router.routes());
 app.use(router.allowedMethods());
 
