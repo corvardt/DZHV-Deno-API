@@ -1,6 +1,7 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 const kv = await Deno.openKv();
+const MAX_ENTRIES = 192;
 const Fetch = async () => {
   let arb_price = 0,
     eth_price = 0,
@@ -56,6 +57,26 @@ const Fetch = async () => {
       }
     }
     const timestamp = Date.now();
+    const _data = [];
+    const result = await kv.list({ prefix: ["full"] });
+    for await (const { value } of result) {
+      _data.push(value);
+    }
+    if (data.length >= MAX_ENTRIES) {
+      // Remove the oldest entries to make space for the new one
+      const entriesToRemove = data.length - MAX_ENTRIES + 1;
+      for (let i = 0; i < entriesToRemove; i++) {
+        // Remove the oldest entry
+        await kv.delete(["full", data[i]]);
+        await kv.delete(["fullliq", data[i]]);
+        await kv.delete(["fullvol", data[i]]);
+        await kv.delete(["arb", data[i]]);
+        await kv.delete(["eth", data[i]]);
+        await kv.delete(["bsc", data[i]]);
+        await kv.delete(["base", data[i]]);
+        await kv.delete(["avax", data[i]]);
+      }
+    }
     await kv.set(
       ["arb", timestamp],
         {
@@ -131,6 +152,7 @@ const Fetch = async () => {
     console.log(timestamp, ": error", "(", error, ")");
     console.error(error);
   }
+  limit+=1;
 };
 Deno.cron("Run once a minute", "* * * * *", () => {
  Fetch();
