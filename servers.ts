@@ -64,7 +64,7 @@ const Fetch = async () => {
     }
     const firsttimestamp = _data[0].timestamp;
 
-    // Remove the oldest entries to make space for the new one
+    // Remove the oldest entries to make space for the new one.
     if (_data.length >= MAX_ENTRIES) {
       await kv.delete(["full", firsttimestamp]);
       await kv.delete(["fullliq", firsttimestamp]);
